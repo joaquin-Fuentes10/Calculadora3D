@@ -1,0 +1,839 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#28e889">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080a0b">
+<title>Calculadora 3D</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --fondo: #080a0b;
+  --tarjeta: #141816;
+  --tarjeta-clara: #1d2420;
+  --verde: #28e889;
+  --verde-oscuro: #14b866;
+  --texto: #f4f7f5;
+  --secundario: #aab5ae;
+  --borde: #303b34;
+}
+
+body {
+  margin: 0;
+  padding: 24px 14px 105px;
+  background:
+    radial-gradient(ellipse at top, #15251b 0%, var(--fondo) 48%);
+  color: var(--texto);
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+}
+
+.contenedor {
+  width: 100%;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+h1 {
+  font-size: clamp(27px, 6vw, 36px);
+  line-height: 1.2;
+  margin: 10px 0 28px;
+  letter-spacing: -0.8px;
+}
+
+h1 span {
+  color: var(--verde);
+}
+
+h2 {
+  font-size: 19px;
+  margin: 0 0 22px;
+}
+
+.campo {
+  margin-bottom: 18px;
+}
+
+label {
+  display: block;
+  color: var(--secundario);
+  font-size: 14px;
+  margin-bottom: 9px;
+  line-height: 1.4;
+}
+
+input[type="number"],
+input[type="text"] {
+  width: 100%;
+  padding: 15px 17px;
+  border-radius: 14px;
+  border: 1px solid #38443c;
+  background: #111512;
+  color: var(--texto);
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="number"]:focus,
+input[type="text"]:focus {
+  border-color: var(--verde);
+  box-shadow: 0 0 0 3px #28e88920;
+}
+
+.dos-columnas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.separador {
+  border: 0;
+  border-top: 1px solid var(--borde);
+  margin: 27px 0;
+}
+
+.porcentaje-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  color: var(--secundario);
+  font-size: 14px;
+}
+
+#valorPorcentaje {
+  color: var(--verde);
+  font-size: 27px;
+  font-weight: bold;
+}
+
+input[type="range"] {
+  width: 100%;
+  margin: 24px 0 12px;
+  accent-color: var(--verde);
+  cursor: pointer;
+}
+
+.limites {
+  display: flex;
+  justify-content: space-between;
+  color: var(--secundario);
+  font-size: 13px;
+}
+
+.resultado {
+  background: linear-gradient(145deg, #202923, #151a17);
+  border: 1px solid #35483a;
+  border-radius: 22px;
+  padding: 23px 20px;
+  margin-top: 27px;
+  box-shadow: 0 12px 35px #00000030;
+}
+
+.titulo-resultado {
+  color: var(--secundario);
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.numero {
+  font-size: clamp(27px, 7vw, 36px);
+  font-weight: 800;
+  letter-spacing: -0.7px;
+  margin: 7px 0 23px;
+  overflow-wrap: anywhere;
+}
+
+#costoFinal {
+  color: var(--texto);
+}
+
+#precioFinal {
+  color: var(--verde);
+  text-shadow: 0 0 20px #28e88920;
+}
+
+.ganancia {
+  border-top: 1px solid #35483a;
+  padding-top: 17px;
+  color: var(--secundario);
+  font-size: 14px;
+}
+
+#gananciaFinal {
+  color: var(--verde);
+  font-size: 19px;
+}
+
+.botones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 11px;
+  margin-top: 22px;
+}
+
+button {
+  min-height: 45px;
+  padding: 13px 12px;
+  border: 1px solid #3b463f;
+  border-radius: 14px;
+  background: #171c19;
+  color: var(--texto);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+button.principal {
+  background: var(--verde);
+  border-color: var(--verde);
+  color: #07130b;
+}
+
+button.principal:hover {
+  background: #56f3a1;
+}
+
+button:not(.principal):hover {
+  border-color: var(--verde);
+}
+
+.costos-extra {
+  margin-top: 18px;
+}
+
+.costo-extra {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 13px;
+  padding: 13px;
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+  background: var(--tarjeta);
+}
+
+.costo-extra .campo {
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.costo-extra button {
+  color: #ff8c8c;
+}
+
+.producto-guardado {
+  background: linear-gradient(145deg, #1b221d, #121613);
+  border: 1px solid #354238;
+  border-radius: 18px;
+  padding: 18px;
+  margin: 14px 0;
+  overflow-wrap: anywhere;
+  box-shadow: 0 8px 20px #00000020;
+}
+
+.producto-guardado strong {
+  display: block;
+  color: var(--verde);
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+.producto-guardado p {
+  color: var(--secundario);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.producto-guardado button {
+  margin: 6px 6px 0 0;
+}
+
+#mensaje {
+  color: var(--verde);
+  margin-top: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.nota {
+  color: var(--secundario);
+  font-size: 12px;
+  line-height: 1.7;
+  margin-top: 22px;
+}
+
+.navegacion {
+  position: fixed;
+  z-index: 10;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background: #101411f5;
+  border-top: 1px solid var(--borde);
+  padding: 12px max(12px, env(safe-area-inset-left));
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  backdrop-filter: blur(12px);
+}
+
+.navegacion button {
+  border: 1px solid transparent;
+  border-radius: 13px;
+  background: transparent;
+  color: var(--secundario);
+  min-height: 46px;
+}
+
+.navegacion button.activo {
+  color: var(--verde);
+  background: #28e88912;
+  border-color: #28e88930;
+}
+
+.pantalla {
+  display: none;
+}
+
+.pantalla.activa {
+  display: block;
+  animation: aparecer 0.22s ease-out;
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 380px) {
+  body {
+    padding: 17px 10px 100px;
+  }
+
+  .dos-columnas {
+    gap: 9px;
+  }
+
+  .resultado {
+    padding: 19px 15px;
+  }
+
+  .botones {
+    gap: 8px;
+  }
+
+  button {
+    padding: 12px 8px;
+    font-size: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+
+</head>
+
+<body>
+
+<main class="contenedor">
+
+<section id="calculadora" class="pantalla activa">
+
+<h1>🖨️ Calculá el precio de tus <span>productos 3D</span></h1>
+
+<h2>Ingresá los datos de tu producto</h2>
+
+<div class="campo">
+  <label for="nombre">Nombre del producto</label>
+  <input id="nombre" type="text" placeholder="Ej.: Soporte para celular">
+</div>
+
+<div class="campo">
+  <label for="filamento">Precio del kilo de filamento ($)</label>
+  <input id="filamento" type="number" min="0" value="20000" oninput="calcular()">
+</div>
+
+<div class="campo">
+  <label for="gramos">Gramos que utiliza el producto</label>
+  <input id="gramos" type="number" min="0" value="50" oninput="calcular()">
+</div>
+
+<div class="dos-columnas">
+  <div class="campo">
+    <label for="horas">Horas de impresión</label>
+    <input id="horas" type="number" min="0" step="0.1" value="4" oninput="calcular()">
+  </div>
+
+  <div class="campo">
+    <label for="costoHora">Costo por hora ($)</label>
+    <input id="costoHora" type="number" min="0" value="300" oninput="calcular()">
+  </div>
+
+  <div class="campo">
+    <label for="desgaste">Desgaste y mantenimiento ($)</label>
+    <input id="desgaste" type="number" min="0" value="500" oninput="calcular()">
+  </div>
+
+  <div class="campo">
+    <label for="manoObra">Mano de obra ($)</label>
+    <input id="manoObra" type="number" min="0" value="500" oninput="calcular()">
+  </div>
+</div>
+
+<div id="costosExtra" class="costos-extra"></div>
+
+<button type="button" class="principal" onclick="agregarCosto()">
+  + Añadir costo extra
+</button>
+
+<hr class="separador">
+
+<div class="porcentaje-cabecera">
+  <span>Margen de ganancia sobre la venta</span>
+  <strong id="valorPorcentaje">40%</strong>
+</div>
+
+<input id="margen" type="range" min="10" max="70" value="40"
+       oninput="calcular()">
+
+<div class="limites">
+  <span>10%</span>
+  <span id="margenCentro">40%</span>
+  <span>70%</span>
+</div>
+
+<hr class="separador">
+
+<div class="resultado">
+  <div class="titulo-resultado">Costo estimado de fabricación</div>
+  <div id="costoFinal" class="numero">$ 2.300</div>
+
+  <div class="titulo-resultado">Precio de venta sugerido</div>
+  <div id="precioFinal" class="numero verde">$ 3.833</div>
+
+  <div class="ganancia">
+    Ganancia estimada: <strong id="gananciaFinal">$ 1.533</strong>
+  </div>
+</div>
+
+<div class="botones">
+  <button class="principal" onclick="agregarCosto()">
+    + Añadir costo
+  </button>
+
+  <button class="principal" onclick="guardarProducto()">
+    ▣ Guardar producto
+  </button>
+
+  <button onclick="limpiar()">↻ Limpiar campos</button>
+</div>
+
+<p id="mensaje"></p>
+
+<p class="nota">
+  El cálculo no incluye electricidad por separado, embalaje,
+  comisiones, impuestos ni impresiones fallidas. Añadí esos costos
+  si corresponden.
+</p>
+
+</section>
+
+<section id="productos" class="pantalla">
+  <h1>Mis <span>productos</span></h1>
+  <p class="nota">Acá aparecerán los productos que guardes con sus costos y precios.</p>
+  <div id="listaProductos"></div>
+</section>
+
+</main>
+
+<nav class="navegacion">
+  <button id="botonCalculadora" class="activo"
+          onclick="mostrarPantalla('calculadora')">
+    ▦ Calculadora
+  </button>
+  <button id="botonProductos"
+          onclick="mostrarPantalla('productos')">
+    ◇ Mis productos
+  </button>
+</nav>
+
+
+<script>
+let cantidadCostos = 0;
+let editandoId = null;
+let productos = JSON.parse(localStorage.getItem("productos3D") || "[]");
+
+function numero(id) {
+  return Math.max(0, Number(document.getElementById(id).value) || 0);
+}
+
+function dinero(valor) {
+  return "$ " + Math.round(valor).toLocaleString("es-AR");
+}
+
+function obtenerExtras() {
+  let extras = [];
+
+  document.querySelectorAll("#costosExtra .costo-extra").forEach(function(fila) {
+    let nombre = fila.querySelector(".extra-nombre").value.trim();
+    let importe = Math.max(0, Number(fila.querySelector(".extra-importe").value) || 0);
+
+    extras.push({
+      nombre: nombre || "Costo adicional",
+      importe: importe
+    });
+  });
+
+  return extras;
+}
+
+function calcular() {
+  let filamento = numero("filamento");
+  let gramos = numero("gramos");
+  let horas = numero("horas");
+  let costoHora = numero("costoHora");
+  let desgaste = numero("desgaste");
+  let manoObra = numero("manoObra");
+  let margen = numero("margen") / 100;
+
+  let costoMaterial = (filamento / 1000) * gramos;
+  let extras = obtenerExtras().reduce(function(total, extra) {
+    return total + extra.importe;
+  }, 0);
+
+  let costo = costoMaterial + (horas * costoHora)
+              + desgaste + manoObra + extras;
+
+  let precio = margen < 1 ? costo / (1 - margen) : costo;
+  let ganancia = precio - costo;
+
+  document.getElementById("valorPorcentaje").textContent =
+    Math.round(margen * 100) + "%";
+
+  document.getElementById("margenCentro").textContent =
+    Math.round(margen * 100) + "%";
+
+  document.getElementById("costoFinal").textContent = dinero(costo);
+  document.getElementById("precioFinal").textContent = dinero(precio);
+  document.getElementById("gananciaFinal").textContent = dinero(ganancia);
+}
+
+function agregarCosto(datos = {}) {
+  cantidadCostos++;
+
+  let fila = document.createElement("div");
+  fila.className = "costo-extra";
+
+  let campo = document.createElement("div");
+  campo.className = "campo";
+
+  let etiqueta = document.createElement("label");
+  etiqueta.textContent = "Nombre del costo extra";
+
+  let nombre = document.createElement("input");
+  nombre.type = "text";
+  nombre.className = "extra-nombre";
+  nombre.placeholder = "Ej.: Embalaje";
+  nombre.value = datos.nombre || "";
+
+  let etiquetaImporte = document.createElement("label");
+  etiquetaImporte.textContent = "Importe ($)";
+  etiquetaImporte.style.marginTop = "10px";
+
+  let entrada = document.createElement("input");
+  entrada.type = "number";
+  entrada.min = "0";
+  entrada.step = "any";
+  entrada.className = "extra-importe";
+  entrada.placeholder = "Importe ($)";
+  entrada.value = datos.importe ?? "";
+  entrada.oninput = calcular;
+
+  nombre.oninput = calcular;
+
+  campo.appendChild(etiqueta);
+  campo.appendChild(nombre);
+  campo.appendChild(etiquetaImporte);
+  campo.appendChild(entrada);
+
+  let borrar = document.createElement("button");
+  borrar.type = "button";
+  borrar.textContent = "✕";
+  borrar.setAttribute("aria-label", "Eliminar costo adicional");
+
+  borrar.onclick = function() {
+    fila.remove();
+    calcular();
+  };
+
+  fila.appendChild(campo);
+  fila.appendChild(borrar);
+
+  document.getElementById("costosExtra").appendChild(fila);
+  calcular();
+}
+
+function guardarProducto() {
+  let nombre = document.getElementById("nombre").value.trim();
+
+  if (!nombre) {
+    document.getElementById("mensaje").textContent =
+      "Escribí el nombre del producto antes de guardarlo.";
+    return;
+  }
+
+  calcular();
+
+  let costo = numero("filamento") / 1000 * numero("gramos")
+    + numero("horas") * numero("costoHora")
+    + numero("desgaste")
+    + numero("manoObra")
+    + obtenerExtras().reduce(function(total, extra) {
+        return total + extra.importe;
+      }, 0);
+
+  let margen = numero("margen") / 100;
+  let precio = margen < 1 ? costo / (1 - margen) : costo;
+
+  let producto = {
+    id: editandoId !== null ? editandoId : Date.now(),
+    nombre: nombre,
+    filamento: numero("filamento"),
+    gramos: numero("gramos"),
+    horas: numero("horas"),
+    costoHora: numero("costoHora"),
+    desgaste: numero("desgaste"),
+    manoObra: numero("manoObra"),
+    extras: obtenerExtras(),
+    margen: numero("margen"),
+    costo: costo,
+    precio: precio,
+    ganancia: precio - costo
+  };
+
+  if (editandoId !== null) {
+    productos = productos.map(function(p) {
+      return p.id === editandoId ? producto : p;
+    });
+
+    document.getElementById("mensaje").textContent =
+      "¡Producto actualizado correctamente!";
+  } else {
+    productos.push(producto);
+
+    document.getElementById("mensaje").textContent =
+      "¡Producto guardado correctamente!";
+  }
+
+  localStorage.setItem("productos3D", JSON.stringify(productos));
+
+  editandoId = null;
+  document.querySelector('button[onclick="guardarProducto()"]').textContent =
+    "▣ Guardar producto";
+
+  mostrarProductos();
+}
+
+function editarProducto(id) {
+  let producto = productos.find(function(p) {
+    return p.id === id;
+  });
+
+  if (!producto) return;
+
+  editandoId = id;
+
+  document.getElementById("nombre").value = producto.nombre;
+  document.getElementById("filamento").value = producto.filamento ?? 20000;
+  document.getElementById("gramos").value = producto.gramos ?? 50;
+  document.getElementById("horas").value = producto.horas ?? 4;
+  document.getElementById("costoHora").value = producto.costoHora ?? 300;
+  document.getElementById("desgaste").value = producto.desgaste ?? 500;
+  document.getElementById("manoObra").value = producto.manoObra ?? 500;
+  document.getElementById("margen").value = producto.margen ?? 40;
+
+  document.getElementById("costosExtra").innerHTML = "";
+  cantidadCostos = 0;
+
+  (producto.extras || []).forEach(function(extra) {
+    agregarCosto(extra);
+  });
+
+  document.querySelector('button[onclick="guardarProducto()"]').textContent =
+    "Guardar cambios";
+
+  document.getElementById("mensaje").textContent =
+    "Editando producto: " + producto.nombre;
+
+  mostrarPantalla("calculadora");
+  calcular();
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function mostrarProductos() {
+  let lista = document.getElementById("listaProductos");
+  lista.innerHTML = "";
+
+  if (productos.length === 0) {
+    lista.textContent = "Todavía no guardaste productos.";
+    return;
+  }
+
+  productos.forEach(function(producto) {
+    let tarjeta = document.createElement("div");
+    tarjeta.className = "producto-guardado";
+
+    let titulo = document.createElement("strong");
+    titulo.textContent = producto.nombre;
+
+    let detalle = document.createElement("p");
+    detalle.textContent =
+      "Filamento: " + dinero(producto.filamento ?? 0) +
+      " por kilo · " + (producto.gramos ?? "—") + " g" +
+      " · Horas: " + (producto.horas ?? "—");
+
+    let detalle2 = document.createElement("p");
+    detalle2.textContent =
+      "Costo: " + dinero(producto.costo) +
+      " | Venta: " + dinero(producto.precio) +
+      " | Ganancia: " + dinero(producto.ganancia) +
+      " | Margen: " + producto.margen + "%";
+
+    let detalle3 = document.createElement("p");
+    detalle3.textContent =
+      "Costo/hora: " + dinero(producto.costoHora ?? 0) +
+      " · Desgaste: " + dinero(producto.desgaste ?? 0) +
+      " · Mano de obra: " + dinero(producto.manoObra ?? 0);
+
+    let extras = document.createElement("p");
+    extras.textContent = "Costos extra: " +
+      ((producto.extras || []).length
+        ? producto.extras.map(function(extra) {
+            return extra.nombre + ": " + dinero(extra.importe);
+          }).join(" · ")
+        : "Ninguno");
+
+    let editar = document.createElement("button");
+    editar.className = "principal";
+    editar.textContent = "✎ Editar";
+    editar.onclick = function() {
+      editarProducto(producto.id);
+    };
+
+    let borrar = document.createElement("button");
+    borrar.textContent = "✕ Eliminar";
+    borrar.onclick = function() {
+      if (!confirm("¿Querés eliminar " + producto.nombre + "?")) return;
+
+      productos = productos.filter(function(p) {
+        return p.id !== producto.id;
+      });
+
+      localStorage.setItem("productos3D", JSON.stringify(productos));
+      mostrarProductos();
+    };
+
+    tarjeta.appendChild(titulo);
+    tarjeta.appendChild(detalle);
+    tarjeta.appendChild(detalle2);
+    tarjeta.appendChild(detalle3);
+    tarjeta.appendChild(extras);
+    tarjeta.appendChild(editar);
+    tarjeta.appendChild(borrar);
+
+    lista.appendChild(tarjeta);
+  });
+}
+
+function limpiar() {
+  document.getElementById("nombre").value = "";
+  document.getElementById("filamento").value = 20000;
+  document.getElementById("gramos").value = 50;
+  document.getElementById("horas").value = 4;
+  document.getElementById("costoHora").value = 300;
+  document.getElementById("desgaste").value = 500;
+  document.getElementById("manoObra").value = 500;
+  document.getElementById("margen").value = 40;
+  document.getElementById("costosExtra").innerHTML = "";
+  cantidadCostos = 0;
+  editandoId = null;
+
+  document.querySelector('button[onclick="guardarProducto()"]').textContent =
+    "▣ Guardar producto";
+
+  document.getElementById("mensaje").textContent = "";
+  calcular();
+}
+
+function mostrarPantalla(pantalla) {
+  document.querySelectorAll(".pantalla").forEach(function(seccion) {
+    seccion.classList.remove("activa");
+  });
+
+  document.getElementById(pantalla).classList.add("activa");
+
+  document.getElementById("botonCalculadora").classList.toggle(
+    "activo", pantalla === "calculadora"
+  );
+
+  document.getElementById("botonProductos").classList.toggle(
+    "activo", pantalla === "productos"
+  );
+
+  if (pantalla === "productos") {
+    mostrarProductos();
+  }
+}
+
+mostrarProductos();
+calcular();
+
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function() {
+    navigator.serviceWorker.register("./sw.js")
+      .then(function() {
+        console.log("Calculadora 3D lista para instalar");
+      })
+      .catch(function(error) {
+        console.error("Error al registrar el service worker:", error);
+      });
+  });
+}
+
+
+</script>
+
+
+</body>
+</html>
+
