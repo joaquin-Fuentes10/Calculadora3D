@@ -392,6 +392,11 @@ button:not(.principal):hover {
     <input id="horas" type="number" min="0" step="0.1" value="4" oninput="calcular()">
   </div>
 
+	  <div class="campo">
+    <label for="minutos">Minutos de impresión</label>
+    <input id="minutos" type="number" min="0" max="59" step="1" value="0" oninput="calcular()">
+  </div>
+
   <div class="campo">
     <label for="costoHora">Costo por hora ($)</label>
     <input id="costoHora" type="number" min="0" value="300" oninput="calcular()">
