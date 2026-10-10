@@ -519,6 +519,7 @@ function calcular() {
   let filamento = numero("filamento");
   let gramos = numero("gramos");
   let horas = numero("horas");
+  let minutos = numero("minutos");
   let costoHora = numero("costoHora");
   let desgaste = numero("desgaste");
   let manoObra = numero("manoObra");
@@ -529,7 +530,9 @@ function calcular() {
     return total + extra.importe;
   }, 0);
 
-  let costo = costoMaterial + (horas * costoHora)
+  let tiempoTotal = horas + (minutos / 60);
+
+  let costo = costoMaterial + (tiempoTotal * costoHora)
               + desgaste + manoObra + extras;
 
   let precio = margen < 1 ? costo / (1 - margen) : costo;
